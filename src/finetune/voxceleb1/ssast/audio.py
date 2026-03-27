@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*- #
 """*********************************************************************************************"""
+
 #   FileName     [ upstream/apc/audio.py ]
 #   Synopsis     [ audio utility functions for apc ]
 #   Author       [ S3PRL / Tzu-Wei Sung (https://github.com/WindQAQ) ]
@@ -60,7 +61,7 @@ class FeatureExtractor(nn.Module):
         decode_wav=False,
         apply_cmvn=False,
         target_length=100,
-        **kwargs
+        **kwargs,
     ):
         super(FeatureExtractor, self).__init__()
         # ToDo: Other surface representation
@@ -95,7 +96,7 @@ class FeatureExtractor(nn.Module):
             num_mel_bins=self.num_mel_bins,
             dither=0.0,
             frame_shift=10,
-            **self.kwargs
+            **self.kwargs,
         )
 
         y = (y + 4.2677393) / (4.5689974 * 2)

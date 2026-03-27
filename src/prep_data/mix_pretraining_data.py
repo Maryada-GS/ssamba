@@ -10,24 +10,25 @@
 import json
 import random
 
-def combine_json(file_list, name='audioset_librispeech960'):
+
+def combine_json(file_list, name="audioset_librispeech960"):
     wav_list = []
     for file in file_list:
-        with open(file, 'r') as f:
+        with open(file, "r") as f:
             cur_json = json.load(f)
-        cur_data = cur_json['data']
+        cur_data = cur_json["data"]
         print(len(cur_data))
         random.shuffle(cur_data)
         for entry in cur_data:
-            entry['labels'] = '/m/09x0r'
+            entry["labels"] = "/m/09x0r"
 
         wav_list = wav_list + cur_data
-    with open(name + '.json', 'w') as f:
+    with open(name + ".json", "w") as f:
         print(len(wav_list))
-        json.dump({'data': wav_list}, f, indent=1)
+        json.dump({"data": wav_list}, f, indent=1)
 
 
-if __name__ == '__main__':
-    audioset_data = '/home/ss6928/ssamba/src/prep_data/unbal_train_data.json'
-    librispeech_data = '/home/ss6928/ssamba/src/prep_data/librispeech/librispeech_tr960_cut.json'
-    combine_json([audioset_data, librispeech_data], name='audioset_librispeech')
+if __name__ == "__main__":
+    audioset_data = "/home/ss6928/ssamba/src/prep_data/unbal_train_data.json"
+    librispeech_data = "/home/ss6928/ssamba/src/prep_data/librispeech/librispeech_tr960_cut.json"
+    combine_json([audioset_data, librispeech_data], name="audioset_librispeech")

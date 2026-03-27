@@ -30,61 +30,61 @@ class UpstreamExpert(torch.nn.Module):
         super().__init__()
         self.window_secs = window_secs
         self.stride_secs = window_secs
-        
-        
-        model_size, model_type = model_size.split("_")[0], model_size.split("_")[1]
-        
+
+        model_size, model_type = (
+            model_size.split("_")[0],
+            model_size.split("_")[1],
+        )
+
         from .ast_models import AMBAModel
 
         try:
-            import timm
-            if model_type == 'p':
+            if model_type == "p":
                 print("importing ssast")
                 from .ast_models import ASTModel
             else:
                 print("importing amba")
                 from .ast_models import AMBAModel
-            
+
         except:
             print("error occured importing")
-            if model_type =='p':
+            if model_type == "p":
                 logger.error(
                     "SSAST requires 'timm==0.4.5' to work. Please run 'pip install timm==0.4.5'"
                 )
                 exit(1)
 
         target_length = int(window_secs * SAMPLE_RATE / FBANK_SAMPLE_STRIDE)
-        
+
         self.preprocessor = FeatureExtractor(
             target_length=target_length, apply_cmvn=False
         )
-        
+
         default_vision_mamba_config = {
-            'img_size': (128, 1000),
-            'patch_size': 16,
-            'stride': 10,
-            'embed_dim': 768,
-            'depth': 24,
-            'rms_norm': True,
-            'residual_in_fp32': False,
-            'fused_add_norm': False,
-            'final_pool_type': 'mean',
-            'if_abs_pos_embed': True,
-            'if_rope': False,
-            'if_rope_residual': False,
-            'bimamba_type': "v2",
-            'if_cls_token': True,
-            'if_devide_out': True,
-            'use_middle_cls_token': False,
+            "img_size": (128, 1000),
+            "patch_size": 16,
+            "stride": 10,
+            "embed_dim": 768,
+            "depth": 24,
+            "rms_norm": True,
+            "residual_in_fp32": False,
+            "fused_add_norm": False,
+            "final_pool_type": "mean",
+            "if_abs_pos_embed": True,
+            "if_rope": False,
+            "if_rope_residual": False,
+            "bimamba_type": "v2",
+            "if_cls_token": True,
+            "if_devide_out": True,
+            "use_middle_cls_token": False,
         }
-        if model_size == 'base':
-            default_vision_mamba_config['embed_dim']=768
-        elif model_size == 'small':
-            default_vision_mamba_config['embed_dim']=384
+        if model_size == "base":
+            default_vision_mamba_config["embed_dim"] = 768
+        elif model_size == "small":
+            default_vision_mamba_config["embed_dim"] = 384
         else:
-            default_vision_mamba_config['embed_dim']=192
-            
-        
+            default_vision_mamba_config["embed_dim"] = 192
+
         assert model_type in ["p", "a"]
         if model_type == "p":
             self.tstride = 10
@@ -112,7 +112,7 @@ class UpstreamExpert(torch.nn.Module):
                 model_size=model_size,
                 pretrain_stage=False,
                 load_pretrained_mdl_path=ckpt,
-                vision_mamba_config = default_vision_mamba_config
+                vision_mamba_config=default_vision_mamba_config,
             )
             self.vertical_num_patches = (128 - 16) // 10 + 1  # 1
 
@@ -124,8 +124,12 @@ class UpstreamExpert(torch.nn.Module):
     def forward(self, wavs):
         wavs_len = [len(wav) for wav in wavs]
         max_wav_len = max(wavs_len)
-        start_points = list(range(0, max_wav_len, int(self.stride_secs * SAMPLE_RATE)))
-        padded_max_wav_len = start_points[-1] + int(self.window_secs * SAMPLE_RATE)
+        start_points = list(
+            range(0, max_wav_len, int(self.stride_secs * SAMPLE_RATE))
+        )
+        padded_max_wav_len = start_points[-1] + int(
+            self.window_secs * SAMPLE_RATE
+        )
         padded_wavs = [
             torch.cat([wav, wav.new_zeros(padded_max_wav_len - len(wav))])
             for wav in wavs
@@ -144,9 +148,13 @@ class UpstreamExpert(torch.nn.Module):
             all_features.append(features)
 
         all_features = torch.stack(all_features, dim=0)
-        num_segment, batch_size, segment_seq_len, hidden_size = all_features.shape
+        num_segment, batch_size, segment_seq_len, hidden_size = (
+            all_features.shape
+        )
 
-        flatten_features = all_features.reshape(-1, segment_seq_len, hidden_size)
+        flatten_features = all_features.reshape(
+            -1, segment_seq_len, hidden_size
+        )
         hidden_states, final_repr = self.model(flatten_features)
 
         reshaped_hidden_states = [

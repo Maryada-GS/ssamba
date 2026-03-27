@@ -11,11 +11,11 @@ import re
 def create_json(directory, output_filename):
     data_list = []
     for filename in os.listdir(directory):
-        if filename.endswith('.flac'):
+        if filename.endswith(".flac"):
             file_path = os.path.join(directory, filename)
             data_list.append({"wav": file_path, "labels": "/m/01b_21"})
-    
-    with open(output_filename, 'w') as outfile:
+
+    with open(output_filename, "w") as outfile:
         json.dump({"data": data_list}, outfile, indent=4)
 
 
@@ -28,7 +28,7 @@ def remove_error_files(log_file_path):
     error_files_not_found_count = 0
 
     # Open and read the log file
-    with open(log_file_path, 'r') as log_file:
+    with open(log_file_path, "r") as log_file:
         for line in log_file:
             # Search for error lines
             match = re.search(error_line_regex, line)
@@ -45,9 +45,8 @@ def remove_error_files(log_file_path):
 
     print(f"Total removed files: {removed_files_count}")
     print(f"Total error files not found: {error_files_not_found_count}")
-    
-    
-    
+
+
 # Directory containing the audio files
 train_directory = "/engram/naplab/shared/audioset/audio/unbal_train/"
 eval_directory = "/engram/naplab/shared/audioset/audio/eval/"
@@ -56,7 +55,7 @@ eval_directory = "/engram/naplab/shared/audioset/audio/eval/"
 train_output_filename = "unbal_train_data.json"
 eval_output_filename = "eval_data.json"
 
-log_file_path = '/home/ss6928/ssamba/preprocess_errors.log'
+log_file_path = "/home/ss6928/ssamba/preprocess_errors.log"
 
 # Execute the function with your log file
 remove_error_files(log_file_path)
