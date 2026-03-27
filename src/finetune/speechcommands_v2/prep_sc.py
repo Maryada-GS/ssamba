@@ -1,122 +1,97 @@
-# -*- coding: utf-8 -*-
-# @Time    : 6/23/21 3:19 PM
-# @Author  : Yuan Gong
-# @Affiliation  : Massachusetts Institute of Technology
-# @Email   : yuangong@mit.edu
-# @File    : prep_sc.py
-
-import numpy as np
 import json
 import os
+
+import numpy as np
 import wget
-from torchaudio.datasets import SPEECHCOMMANDS
 
-# prepare the data of the speechcommands dataset.
-print('Now download and process speechcommands dataset, it will take a few moments...')
+DATA_DIR = "./data"
+SC_DIR = f"{DATA_DIR}/speech_commands_v0.02"
+SC_URL = (
+    "https://storage.googleapis.com/download.tensorflow.org"
+    "/data/speech_commands_v0.02.tar.gz"
+)
+DATAFILES_DIR = f"{DATA_DIR}/datafiles"
+SPLIT_TO_JSON = {
+    "train": f"{DATAFILES_DIR}/speechcommand_train_data.json",
+    "validation": f"{DATAFILES_DIR}/speechcommand_valid_data.json",
+    "testing": f"{DATAFILES_DIR}/speechcommand_eval_data.json",
+}
 
-# download the speechcommands dataset
-if os.path.exists('./data/speech_commands_v0.02') == False:
-    # we use the 35 class v2 dataset, which is used in torchaudio https://pytorch.org/audio/stable/_modules/torchaudio/datasets/speechcommands.html
-    sc_url = 'https://storage.googleapis.com/download.tensorflow.org/data/speech_commands_v0.02.tar.gz'
-    wget.download(sc_url, out='./data/')
-    os.mkdir('./data/speech_commands_v0.02')
-    os.system('tar -xzvf ./data/speech_commands_v0.02.tar.gz -C ./data/speech_commands_v0.02')
-    #os.remove('./data/speech_commands_v0.02.tar.gz')
 
-# generate training list = all samples - validation_list - testing_list
-if os.path.exists('./data/speech_commands_v0.02/train_list.txt')==False:
-    with open('./data/speech_commands_v0.02/validation_list.txt', 'r') as f:
-        val_list = f.readlines()
+def download_dataset():
+    print("Downloading Speech Commands v0.02...")
+    os.makedirs(DATA_DIR, exist_ok=True)
+    tarball = f"{DATA_DIR}/speech_commands_v0.02.tar.gz"
+    wget.download(SC_URL, out=DATA_DIR)
+    os.makedirs(SC_DIR, exist_ok=True)
+    os.system(f"tar -xzvf {tarball} -C {SC_DIR}")
 
-    with open('./data/speech_commands_v0.02/testing_list.txt', 'r') as f:
-        test_list = f.readlines()
 
-    val_test_list = list(set(test_list+val_list))
+def build_train_list():
+    def subdirs(d):
+        return [n for n in os.listdir(d) if os.path.isdir(os.path.join(d, n))]
 
-    def get_immediate_subdirectories(a_dir):
-        return [name for name in os.listdir(a_dir) if os.path.isdir(os.path.join(a_dir, name))]
-    def get_immediate_files(a_dir):
-        return [name for name in os.listdir(a_dir) if os.path.isfile(os.path.join(a_dir, name))]
+    def files(d):
+        return [n for n in os.listdir(d) if os.path.isfile(os.path.join(d, n))]
 
-    base_path = './data/speech_commands_v0.02/'
-    all_cmds = get_immediate_subdirectories(base_path)
-    all_list = []
-    for cmd in all_cmds:
-        if cmd != '_background_noise_':
-            cmd_samples = get_immediate_files(base_path+'/'+cmd)
-            for sample in cmd_samples:
-                all_list.append(cmd + '/' + sample+'\n')
+    with open(f"{SC_DIR}/validation_list.txt") as f:
+        val_list = set(f.readlines())
+    with open(f"{SC_DIR}/testing_list.txt") as f:
+        test_list = set(f.readlines())
 
-    training_list = [x for x in all_list if x not in val_test_list]
+    excluded = val_list | test_list
+    all_samples = [
+        f"{cmd}/{sample}\n"
+        for cmd in subdirs(SC_DIR)
+        if cmd != "_background_noise_"
+        for sample in files(f"{SC_DIR}/{cmd}")
+    ]
+    train_list = [x for x in all_samples if x not in excluded]
 
-    with open('./data/speech_commands_v0.02/train_list.txt', 'w') as f:
-        f.writelines(training_list)
+    with open(f"{SC_DIR}/train_list.txt", "w") as f:
+        f.writelines(train_list)
 
-# The implementation of torchaudio has some bugs, use my own implementation, but the split results are exactly the same
-# print('Now download and process speechcommands dataset, it will take a few moments...')
-# class SubsetSC(SPEECHCOMMANDS):
-#     def __init__(self, subset: str = None):
-#         super().__init__("./data/", download=True)
-#
-#         def load_list(filename):
-#             filepath = os.path.join(self._path, filename)
-#             with open(filepath) as fileobj:
-#                 return [os.path.join(self._path, line.strip()) for line in fileobj]
-#
-#         if subset == "validation":
-#             self._walker = load_list("validation_list.txt")
-#         elif subset == "testing":
-#             self._walker = load_list("testing_list.txt")
-#         elif subset == "training":
-#             excludes = load_list("validation_list.txt") + load_list("testing_list.txt")
-#             excludes = set(excludes)
-#             self._walker = [w for w in self._walker if w not in excludes]
-#             train_full_path = [w for w in self._walker if w not in excludes]
-#             gen_train_list(train_full_path)
-#
-# def gen_train_list(train_full_path):
-#     train_list = []
-#     for fullpath in train_full_path:
-#         fullpath = fullpath.split('/')[3:]
-#         fullpath = '/'.join(fullpath)+'\n'
-#         train_list.append(fullpath)
-#     with open('./data/SpeechCommands/speech_commands_v0.02/train_list.txt', 'w') as f:
-#         f.writelines(train_list)
 
-# Create training and testing split of the data. We do not use validation in this tutorial. Function borrowed from torchaudio implementation.
-#train_set = SubsetSC("training")
+def build_label_map():
+    label_set = np.loadtxt(
+        f"{DATA_DIR}/speechcommands_class_labels_indices.csv",
+        delimiter=",",
+        dtype="str",
+    )
+    return {eval(row[2]): row[0] for row in label_set[1:]}
 
-label_set = np.loadtxt('./data/speechcommands_class_labels_indices.csv', delimiter=',', dtype='str')
-label_map = {}
-for i in range(1, len(label_set)):
-    label_map[eval(label_set[i][2])] = label_set[i][0]
-print(label_map)
 
-# generate  json files
-if os.path.exists('./data/datafiles') == False:
-    os.mkdir('./data/datafiles')
-    base_path = './data/speech_commands_v0.02/'
-    for split in ['testing', 'validation', 'train']:
-        wav_list = []
-        with open(base_path+split+'_list.txt', 'r') as f:
+def build_json_files(label_map):
+    os.makedirs(DATAFILES_DIR, exist_ok=True)
+    abs_sc_dir = os.path.join(os.path.abspath(os.getcwd()), "data/speech_commands_v0.02")
+
+    for split, out_path in SPLIT_TO_JSON.items():
+        with open(f"{SC_DIR}/{split}_list.txt") as f:
             filelist = f.readlines()
-        for file in filelist:
-            cur_label = label_map[file.split('/')[0]]
-            cur_path = os.path.abspath(os.getcwd()) + '/data/speech_commands_v0.02/' + file.strip()
-            cur_dict = {"wav": cur_path, "labels": '/m/spcmd'+cur_label.zfill(2)}
-            wav_list.append(cur_dict)
-        if split == 'train':
-            with open('./data/datafiles/speechcommand_train_data.json', 'w') as f:
-                json.dump({'data': wav_list}, f, indent=1)
-        if split == 'testing':
-            with open('./data/datafiles/speechcommand_eval_data.json', 'w') as f:
-                json.dump({'data': wav_list}, f, indent=1)
-        if split == 'validation':
-            with open('./data/datafiles/speechcommand_valid_data.json', 'w') as f:
-                json.dump({'data': wav_list}, f, indent=1)
-        print(split + ' data processing finished, total {:d} samples'.format(len(wav_list)))
 
-    print('Speechcommands dataset processing finished.')
+        wav_list = [
+            {
+                "wav": f"{abs_sc_dir}/{f.strip()}",
+                "labels": "/m/spcmd" + label_map[f.split("/")[0]].zfill(2),
+            }
+            for f in filelist
+        ]
+
+        with open(out_path, "w") as f:
+            json.dump({"data": wav_list}, f, indent=1)
+
+        print(f"{split}: {len(wav_list)} samples -> {out_path}")
 
 
+if __name__ == "__main__":
+    if not os.path.exists(SC_DIR):
+        download_dataset()
 
+    if not os.path.exists(f"{SC_DIR}/train_list.txt"):
+        build_train_list()
+
+    label_map = build_label_map()
+
+    if not os.path.exists(DATAFILES_DIR):
+        build_json_files(label_map)
+        print("Done.")
