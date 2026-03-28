@@ -1,9 +1,12 @@
+
 #!/bin/bash
-#SBATCH --job-name=sc_amba
-#SBATCH --gres=gpu:l40:1          # Request an L40 GPU
-#SBATCH --cpus-per-task=8         # Number of CPUs
+#SBATCH --partition=l4
+#SBATCH --gres=gpu:1
+#SBATCH --job-name=tiny-250
+#SBATCH --time=8:00:00
 #SBATCH --mem=32G                 # Amount of memory
-#SBATCH --output=job_%j.out       # Standard output and error log
+#SBATCH --output=job_%j.log
+
 
 set -x
 export TORCH_HOME=../../pretrained_models
@@ -180,4 +183,5 @@ CUDA_CACHE_DISABLE=1 python -W ignore ../../run.py --model amba \
     --lrscheduler_decay 0.85 \
     --loss              BCE \
     --metrics           acc \
-    --wa                False
+    --wa                False \
+    --output        ~/runs/amba

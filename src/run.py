@@ -350,3 +350,7 @@ if args.data_eval is not None:
 
 if args.use_mlflow:
     mlflow.end_run()
+
+if args.dataset == "speechcommands":
+    from utilities.plot_results import plot_training_results
+    plot_training_results(args.exp_dir, main_metrics=args.metrics)

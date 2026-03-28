@@ -7,3 +7,4 @@
 
 from .util import *
 from .stats import *
+from .plot_results import plot_training_results
