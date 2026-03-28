@@ -14,7 +14,7 @@ urls = [
 ]
 
 # Target directory for downloads and extraction
-target_dir = "/engram/naplab/shared/Librispeech"
+target_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "dataset", "librispeech")
 
 # Ensure the target directory exists
 os.makedirs(target_dir, exist_ok=True)

@@ -15,13 +15,15 @@ import torch
 import torch.nn as nn
 from timm.models.layers import to_2tuple, trunc_normal_
 
+import os
 import sys
 from random import randrange
 import random
 
-sys.path.append("/home/ss6928/ssast/Vim")
-sys.path.append("/home/ss6928/ssast/Vim/vim")
-sys.path.append("/home/ss6928/ssast/Vim/vim/mamba-1p1p1")
+_vim_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", "Vim")
+sys.path.append(_vim_root)
+sys.path.append(os.path.join(_vim_root, "vim"))
+sys.path.append(os.path.join(_vim_root, "vim", "mamba-1p1p1"))
 
 
 try:

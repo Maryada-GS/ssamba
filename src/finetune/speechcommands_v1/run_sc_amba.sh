@@ -17,14 +17,9 @@ else
     python prep_sc.py
 fi
 
-source /share/apps/anaconda3-2019.03/etc/profile.d/conda.sh
-conda activate new_env_name
-
-
-
 pretrain_exp="amba"
 pretrain_model=$1
-pretrain_path="/engram/naplab/shared/ssamba/models/${pretrain_model}.pth"
+pretrain_path="../../model_weights/${pretrain_model}.pth"
 
 dataset=speechcommands
 dataset_mean=-6.845978
@@ -65,7 +60,7 @@ head_lr=1
 base_exp_dir=./exp/test01-${dataset}-f${fstride}-${fshape}-t${tstride}-${tshape}-b${batch_size}-lr${lr}-${task}-${model_size}-${pretrain_exp}-${pretrain_model}-${head_lr}x-noise${noise}
 
 
-pretrain_path=./${pretrain_exp}/${pretrain_model}.pth
+pretrain_path="../../model_weights/${pretrain_model}.pth"
 exp_dir=./exp/test01-${dataset}-f$fstride-t$tstride-b$batch_size-lr${lr}-${task}-${model_size}-$pretrain_exp-${pretrain_model}-${head_lr}x-noise${noise}
 
 CUDA_CACHE_DISABLE=1 python -W ignore ../../run_amba.py --use_wandb --dataset ${dataset} \

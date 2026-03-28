@@ -12,10 +12,18 @@ logging.basicConfig(
     format="%(asctime)s %(message)s",
 )
 
-# Path to the metadata file
-metadata_file = "/engram/naplab/shared/UrbanSound8K/metadata/UrbanSound8K.csv"
+DATASET_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "dataset", "urban8k")
 
-audio_base_path = "/engram/naplab/shared/UrbanSound8K/audio"
+# Path to the metadata file
+metadata_file = os.path.join(DATASET_ROOT, "metadata", "UrbanSound8K.csv")
+
+if not os.path.exists(metadata_file):
+    print(f"UrbanSound8K not found at {DATASET_ROOT}.")
+    print("Please download it manually from https://urbansounddataset.weebly.com/urbansound8k.html")
+    print(f"and extract it to {DATASET_ROOT}/")
+    exit(1)
+
+audio_base_path = os.path.join(DATASET_ROOT, "audio")
 
 desired_length = 60000
 

@@ -7,8 +7,6 @@
 #SBATCH --output=job_%j.out      # Standard output and error log
 
 set -x
-source /share/apps/anaconda3-2019.03/etc/profile.d/conda.sh
-conda activate superv
 export TORCH_HOME=../../pretrained_models
 
 # Default parameters

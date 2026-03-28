@@ -9,12 +9,9 @@ set -x
 export TORCH_HOME=../../pretrained_models
 mkdir exp
 
-source /share/apps/anaconda3-2019.03/etc/profile.d/conda.sh
-conda activate new_env_name
-
 pretrain_exp="ssast"
 pretrain_model=$1
-pretrain_path="/engram/naplab/shared/ssamba/models/${pretrain_model}.pth"
+pretrain_path="../../model_weights/${pretrain_model}.pth"
 
 
 dataset=esc50

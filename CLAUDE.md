@@ -10,18 +10,19 @@ SSAMBA (Self-Supervised Audio Mamba) is a PyTorch implementation of self-supervi
 
 ```bash
 pip install -r requirements.txt
-# Also required: clone Vision Mamba inside ssamba directory
+# Also required: clone Vision Mamba inside the repo root (ssamba/)
+# Vim is NOT currently cloned — must be done manually before running any model code
 git clone https://github.com/hustvl/Vim.git
 ```
 
-For VoxCeleb1/IEMOCAP tasks, also install SUPERB:
+For VoxCeleb1/IEMOCAP tasks, also install s3prl:
 ```bash
-git clone https://github.com/s3prl/s3prl.git && pip install -e s3prl/
+pip install s3prl
 ```
 
 ## Running Training / Fine-tuning
 
-All training is invoked via `src/run_amba.py`. The shell scripts under `src/pretrain/` and `src/finetune/*/` are SLURM job wrappers — they can be run directly after removing `#SBATCH` directives and `conda activate` lines.
+All training is invoked via `src/run_amba.py`. The shell scripts under `src/pretrain/` and `src/finetune/*/` are SLURM job wrappers — they can be run directly after removing `#SBATCH` directives. Note: scripts still contain hardcoded cluster paths (`/engram/naplab/...`, `/home/ss6928/...`) that must be updated for your environment.
 
 **Pretraining:**
 ```bash

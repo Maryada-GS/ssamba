@@ -47,18 +47,24 @@ def remove_error_files(log_file_path):
     print(f"Total error files not found: {error_files_not_found_count}")
 
 
+DATASET_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "dataset", "audioset")
+os.makedirs(os.path.join(DATASET_ROOT, "audio", "unbal_train"), exist_ok=True)
+os.makedirs(os.path.join(DATASET_ROOT, "audio", "eval"), exist_ok=True)
+os.makedirs(os.path.join(DATASET_ROOT, "datafiles"), exist_ok=True)
+
 # Directory containing the audio files
-train_directory = "/engram/naplab/shared/audioset/audio/unbal_train/"
-eval_directory = "/engram/naplab/shared/audioset/audio/eval/"
+train_directory = os.path.join(DATASET_ROOT, "audio", "unbal_train")
+eval_directory = os.path.join(DATASET_ROOT, "audio", "eval")
 
 # Output JSON file names
-train_output_filename = "unbal_train_data.json"
-eval_output_filename = "eval_data.json"
+train_output_filename = os.path.join(DATASET_ROOT, "datafiles", "unbal_train_data.json")
+eval_output_filename = os.path.join(DATASET_ROOT, "datafiles", "eval_data.json")
 
-log_file_path = "/home/ss6928/ssamba/preprocess_errors.log"
+log_file_path = os.path.join(DATASET_ROOT, "preprocess_errors.log")
 
-# Execute the function with your log file
-remove_error_files(log_file_path)
+# Execute the function with your log file (only if log exists)
+if os.path.exists(log_file_path):
+    remove_error_files(log_file_path)
 
 
 # Create JSON for training data

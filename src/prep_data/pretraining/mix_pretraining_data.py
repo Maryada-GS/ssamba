@@ -29,6 +29,10 @@ def combine_json(file_list, name="audioset_librispeech960"):
 
 
 if __name__ == "__main__":
-    audioset_data = "/home/ss6928/ssamba/src/prep_data/unbal_train_data.json"
-    librispeech_data = "/home/ss6928/ssamba/src/prep_data/librispeech/librispeech_tr960_cut.json"
-    combine_json([audioset_data, librispeech_data], name="audioset_librispeech")
+    import os
+    DATASET_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "dataset")
+    audioset_data = os.path.join(DATASET_ROOT, "audioset", "datafiles", "unbal_train_data.json")
+    librispeech_data = os.path.join(DATASET_ROOT, "librispeech", "librispeech_tr960_cut.json")
+    output_path = os.path.join(DATASET_ROOT, "pretraining", "audioset_librispeech")
+    os.makedirs(os.path.join(DATASET_ROOT, "pretraining"), exist_ok=True)
+    combine_json([audioset_data, librispeech_data], name=output_path)

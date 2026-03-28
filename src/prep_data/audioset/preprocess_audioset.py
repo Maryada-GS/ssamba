@@ -58,11 +58,13 @@ def preprocess_audio_files(directory):
         print("Successfully processed all files.")
 
 
+DATASET_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "dataset", "audioset")
+
 # Directories to preprocess
 directories = [
-    "/engram/naplab/shared/audioset/audio/bal_train",
-    "/engram/naplab/shared/audioset/audio/eval",
-    "/engram/naplab/shared/audioset/audio/unbal_train",
+    os.path.join(DATASET_ROOT, "audio", "bal_train"),
+    os.path.join(DATASET_ROOT, "audio", "eval"),
+    os.path.join(DATASET_ROOT, "audio", "unbal_train"),
 ]
 
 for directory in directories:

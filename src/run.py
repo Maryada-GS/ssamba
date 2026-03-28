@@ -24,8 +24,6 @@ from traintest_mask import trainmask
 import sys
 import wandb
 
-sys.path.append("/share/naplab/users/ss6928/ssast/modules")
-
 
 print(
     "I am process %s, running on %s: starting (%s)"

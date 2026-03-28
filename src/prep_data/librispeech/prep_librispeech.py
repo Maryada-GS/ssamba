@@ -50,22 +50,23 @@ def combine_json(file_list, name="librispeech_tr960"):
         json.dump({"data": wav_list}, f, indent=1)
 
 
-librispeech100_path = (
-    "/engram/naplab/shared/Librispeech/LibriSpeech/train-other-500/"
-)
-walk(librispeech100_path, "librispeech_tr500_cut")
+LIBRISPEECH_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "dataset", "librispeech")
+DATASET_ROOT = os.path.join(LIBRISPEECH_ROOT, "LibriSpeech")
 
-librispeech100_path = (
-    "/engram/naplab/shared/Librispeech/LibriSpeech/train-clean-360/"
-)
-walk(librispeech100_path, "librispeech_tr360_cut")
+librispeech100_path = os.path.join(DATASET_ROOT, "train-other-500")
+walk(librispeech100_path, os.path.join(LIBRISPEECH_ROOT, "librispeech_tr500_cut"))
 
-librispeech100_path = (
-    "/engram/naplab/shared/Librispeech/LibriSpeech/train-clean-100/"
-)
-walk(librispeech100_path, "librispeech_tr100_cut")
+librispeech100_path = os.path.join(DATASET_ROOT, "train-clean-360")
+walk(librispeech100_path, os.path.join(LIBRISPEECH_ROOT, "librispeech_tr360_cut"))
+
+librispeech100_path = os.path.join(DATASET_ROOT, "train-clean-100")
+walk(librispeech100_path, os.path.join(LIBRISPEECH_ROOT, "librispeech_tr100_cut"))
 
 combine_json(
-    ["librispeech_tr500_cut", "librispeech_tr360_cut", "librispeech_tr100_cut"],
-    name="librispeech_tr960_cut",
+    [
+        os.path.join(LIBRISPEECH_ROOT, "librispeech_tr500_cut"),
+        os.path.join(LIBRISPEECH_ROOT, "librispeech_tr360_cut"),
+        os.path.join(LIBRISPEECH_ROOT, "librispeech_tr100_cut"),
+    ],
+    name=os.path.join(LIBRISPEECH_ROOT, "librispeech_tr960_cut"),
 )

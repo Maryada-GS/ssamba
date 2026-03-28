@@ -91,14 +91,16 @@ def preprocess_librispeech(input_directories, output_base_directory):
     print("Processed files logged in processed_files_log.txt")
 
 
+DATASET_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "dataset", "librispeech", "LibriSpeech")
+
 # Directories to preprocess
 input_directories = [
-    "/engram/naplab/shared/Librispeech/LibriSpeech/train-clean-100",
-    "/engram/naplab/shared/Librispeech/LibriSpeech/train-clean-360",
-    "/engram/naplab/shared/Librispeech/LibriSpeech/train-other-500",
+    os.path.join(DATASET_ROOT, "train-clean-100"),
+    os.path.join(DATASET_ROOT, "train-clean-360"),
+    os.path.join(DATASET_ROOT, "train-other-500"),
 ]
 
 # Base directory to save processed files
-output_base_directory = "/engram/naplab/shared/Librispeech/ProcessedLibriSpeech"
+output_base_directory = os.path.join(DATASET_ROOT, "..", "ProcessedLibriSpeech")
 
 preprocess_librispeech(input_directories, output_base_directory)

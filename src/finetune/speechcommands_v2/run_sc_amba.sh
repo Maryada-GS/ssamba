@@ -16,15 +16,12 @@ else
     python prep_sc.py
 fi
 
-source /share/apps/anaconda3-2019.03/etc/profile.d/conda.sh
-conda activate new_env_name
-
 # ---------------------------------------------------------------------------
 # Pretrained model
 # ---------------------------------------------------------------------------
 pretrain_exp="amba"
 pretrain_model=$1
-pretrain_path=./${pretrain_exp}/${pretrain_model}.pth
+pretrain_path="../../model_weights/${pretrain_model}.pth"
 
 # ---------------------------------------------------------------------------
 # Dataset config
