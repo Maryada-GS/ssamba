@@ -80,8 +80,70 @@ exp_dir=./exp/test01-${dataset}\
 # ---------------------------------------------------------------------------
 # Run fine-tuning
 # ---------------------------------------------------------------------------
+# Original command commented out — Mamba config vars were undefined in this script;
+# removed them below to let run.py argparse defaults apply.
+# CUDA_CACHE_DISABLE=1 python -W ignore ../../run.py --model amba \
+#     --use_wandb \
+#     --dataset           ${dataset} \
+#     --data-train        ${tr_data} \
+#     --data-val          ${val_data} \
+#     --data-eval         ${eval_data} \
+#     --exp-dir           ${exp_dir} \
+#     --label-csv         ./data/speechcommands_class_labels_indices.csv \
+#     --n_class           35 \
+#     --pretrained_mdl_path ${pretrain_path} \
+#     --model_size        ${model_size} \
+#     --embed_dim         ${embed_dim} \
+#     --depth             ${depth} \
+#     --task              ${task} \
+#     --lr                ${lr} \
+#     --n-epochs          ${epoch} \
+#     --batch-size        ${batch_size} \
+#     --save_model        False \
+#     --freqm             ${freqm} \
+#     --timem             ${timem} \
+#     --mixup             ${mixup} \
+#     --bal               ${bal} \
+#     --fshape            ${fshape} \
+#     --tshape            ${tshape} \
+#     --fstride           ${fstride} \
+#     --tstride           ${tstride} \
+#     --warmup            True \
+#     --adaptschedule     False \
+#     --head_lr           ${head_lr} \
+#     --noise             ${noise} \
+#     --dataset_mean      ${dataset_mean} \
+#     --dataset_std       ${dataset_std} \
+#     --target_length     ${target_length} \
+#     --num_mel_bins      128 \
+#     --lrscheduler_start 5 \
+#     --lrscheduler_step  1 \
+#     --lrscheduler_decay 0.85 \
+#     --loss              BCE \
+#     --metrics           acc \
+#     --wa                False \
+#     --rms_norm          ${rms_norm} \
+#     --residual_in_fp32  ${residual_in_fp32} \
+#     --fused_add_norm    ${fused_add_norm} \
+#     --if_rope           ${if_rope} \
+#     --if_rope_residual  ${if_rope_residual} \
+#     --bimamba_type      ${bimamba_type} \
+#     --drop_path_rate    ${drop_path_rate} \
+#     --stride            ${stride} \
+#     --channels          ${channels} \
+#     --num_classes       ${num_classes} \
+#     --drop_rate         ${drop_rate} \
+#     --norm_epsilon      ${norm_epsilon} \
+#     --if_bidirectional  ${if_bidirectional} \
+#     --final_pool_type   ${final_pool_type} \
+#     --if_abs_pos_embed  ${if_abs_pos_embed} \
+#     --if_bimamba        ${if_bimamba} \
+#     --if_cls_token      ${if_cls_token} \
+#     --if_devide_out     ${if_devide_out} \
+#     --use_double_cls_token   ${use_double_cls_token} \
+#     --use_middle_cls_token   ${use_middle_cls_token}
+
 CUDA_CACHE_DISABLE=1 python -W ignore ../../run.py --model amba \
-    --use_wandb \
     --dataset           ${dataset} \
     --data-train        ${tr_data} \
     --data-val          ${val_data} \
@@ -92,7 +154,6 @@ CUDA_CACHE_DISABLE=1 python -W ignore ../../run.py --model amba \
     --pretrained_mdl_path ${pretrain_path} \
     --model_size        ${model_size} \
     --embed_dim         ${embed_dim} \
-    --depth             ${depth} \
     --task              ${task} \
     --lr                ${lr} \
     --n-epochs          ${epoch} \
@@ -119,24 +180,4 @@ CUDA_CACHE_DISABLE=1 python -W ignore ../../run.py --model amba \
     --lrscheduler_decay 0.85 \
     --loss              BCE \
     --metrics           acc \
-    --wa                False \
-    --rms_norm          ${rms_norm} \
-    --residual_in_fp32  ${residual_in_fp32} \
-    --fused_add_norm    ${fused_add_norm} \
-    --if_rope           ${if_rope} \
-    --if_rope_residual  ${if_rope_residual} \
-    --bimamba_type      ${bimamba_type} \
-    --drop_path_rate    ${drop_path_rate} \
-    --stride            ${stride} \
-    --channels          ${channels} \
-    --num_classes       ${num_classes} \
-    --drop_rate         ${drop_rate} \
-    --norm_epsilon      ${norm_epsilon} \
-    --if_bidirectional  ${if_bidirectional} \
-    --final_pool_type   ${final_pool_type} \
-    --if_abs_pos_embed  ${if_abs_pos_embed} \
-    --if_bimamba        ${if_bimamba} \
-    --if_cls_token      ${if_cls_token} \
-    --if_devide_out     ${if_devide_out} \
-    --use_double_cls_token   ${use_double_cls_token} \
-    --use_middle_cls_token   ${use_middle_cls_token}
+    --wa                False

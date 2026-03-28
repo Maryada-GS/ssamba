@@ -12,7 +12,7 @@ import torch
 from torch import nn
 import numpy as np
 import pickle
-import wandb
+import mlflow
 
 
 def train(audio_model, train_loader, test_loader, args):
@@ -279,17 +279,16 @@ def train(audio_model, train_loader, test_loader, args):
                     )
                     print("audio output and label saved for debugging.")
                     # return
-                if args.use_wandb:
-                    wandb.log(
+                if args.use_mlflow:
+                    mlflow.log_metrics(
                         {
-                            "Epoch": epoch,
-                            "Train Loss": loss_meter.avg,
-                            "Per Sample Total Time": per_sample_time.avg,
-                            "Per Sample Data Time": per_sample_data_time.avg,
-                            "Per Sample DNN Time": per_sample_dnn_time.avg,
-                            "Learning Rate": optimizer.param_groups[0]["lr"],
-                            "Step": global_step,
-                        }
+                            "train_loss": loss_meter.avg,
+                            "train_per_sample_time": per_sample_time.avg,
+                            "train_per_sample_data_time": per_sample_data_time.avg,
+                            "train_per_sample_dnn_time": per_sample_dnn_time.avg,
+                            "learning_rate": optimizer.param_groups[0]["lr"],
+                        },
+                        step=global_step,
                     )
 
             end_time = time.time()
@@ -329,16 +328,15 @@ def train(audio_model, train_loader, test_loader, args):
         print("train_loss: {:.6f}".format(loss_meter.avg))
         print("valid_loss: {:.6f}".format(valid_loss))
 
-        if args.use_wandb:
-            # Assuming stats is a dictionary with all your validation metrics
-            wandb.log(
+        if args.use_mlflow:
+            mlflow.log_metrics(
                 {
-                    "Epoch": epoch,
-                    "Validation Loss": valid_loss,
-                    "Validation mAP": mAP,
-                    "Validation Accuracy": acc,  # Adjust according to your stats dictionary
-                    "Validation AUC": mAUC,
-                }
+                    "val_loss": valid_loss,
+                    "val_mAP": mAP,
+                    "val_acc": acc,
+                    "val_AUC": mAUC,
+                },
+                step=epoch,
             )
 
         if main_metrics == "mAP":

@@ -11,7 +11,7 @@ import torch
 from torch import nn
 import numpy as np
 import pickle
-import wandb
+import mlflow
 
 
 def trainmask(audio_model, train_loader, test_loader, args):
@@ -193,15 +193,14 @@ def trainmask(audio_model, train_loader, test_loader, args):
                     ),
                     flush=True,
                 )
-                if args.use_wandb:
-                    wandb.log(
+                if args.use_mlflow:
+                    mlflow.log_metrics(
                         {
-                            "Train Loss": loss.item(),
-                            "Train Accuracy": acc.detach().cpu().item(),
-                            "Learning Rate": optimizer.param_groups[0]["lr"],
-                            "Epoch": epoch,
-                            "Step": global_step,
-                        }
+                            "train_loss": loss.item(),
+                            "train_acc": acc.detach().cpu().item(),
+                            "learning_rate": optimizer.param_groups[0]["lr"],
+                        },
+                        step=global_step,
                     )
                 if np.isnan(loss_meter.avg):
                     print("training diverged...")
@@ -238,12 +237,13 @@ def trainmask(audio_model, train_loader, test_loader, args):
                     ]
                 )
                 np.savetxt(exp_dir + "/result.csv", result, delimiter=",")
-                if args.use_wandb:
-                    wandb.log(
+                if args.use_mlflow:
+                    mlflow.log_metrics(
                         {
-                            "Validation Accuracy": acc_eval,
-                            "Validation Loss": nce_eval,
-                        }
+                            "val_acc": acc_eval,
+                            "val_loss": nce_eval,
+                        },
+                        step=equ_epoch,
                     )
                 if acc > best_acc:
                     best_acc = acc

@@ -16,7 +16,7 @@ import dataloader
 import numpy as np
 from traintest import train, validate
 from traintest_mask import trainmask
-import wandb
+import mlflow
 
 print(
     "I am process %s, running on %s: starting (%s)"
@@ -97,7 +97,7 @@ parser.add_argument("--wa", help="if do weight averaging in finetuning", type=as
 parser.add_argument("--wa_start", type=int, default=16, help="which epoch to start weight averaging")
 parser.add_argument("--wa_end", type=int, default=30, help="which epoch to end weight averaging")
 parser.add_argument("--loss", type=str, default="BCE", help="the loss function for finetuning", choices=["BCE", "CE"])
-parser.add_argument("--use_wandb", action="store_true", help="Enable logging to Weights & Biases")
+parser.add_argument("--use_mlflow", action="store_true", help="Enable logging to MLflow")
 
 # Vision Mamba args (used only when --model amba)
 parser.add_argument("--patch_size", type=int, default=16)
@@ -134,14 +134,16 @@ for attr in [
 ]:
     setattr(args, attr, getattr(args, attr) == "true")
 
-if args.use_wandb:
+if args.use_mlflow:
     prefix = "amba" if args.model == "amba" else "ssast"
-    project_name = f"{prefix}_final"
+    experiment_name = f"{prefix}_final"
     if args.dataset == "esc50":
-        project_name = f"{prefix}_esc"
+        experiment_name = f"{prefix}_esc"
     elif args.dataset == "audioset":
-        project_name = f"{prefix}_as"
-    wandb.init(project=project_name, config=args)
+        experiment_name = f"{prefix}_as"
+    mlflow.set_experiment(experiment_name)
+    mlflow.start_run()
+    mlflow.log_params({k: v for k, v in vars(args).items() if v is not None})
 
 audio_conf = {
     "num_mel_bins": args.num_mel_bins,
@@ -339,9 +341,12 @@ if args.data_eval is not None:
     print("---------------evaluate on the test set---------------")
     print("Accuracy: {:.6f}".format(eval_acc))
     print("AUC: {:.6f}".format(eval_mAUC))
-    if args.use_wandb:
-        wandb.log({"val_accuracy": val_acc, "val_mAUC": val_mAUC})
+    if args.use_mlflow:
+        mlflow.log_metrics({"val_accuracy": val_acc, "val_mAUC": val_mAUC})
     np.savetxt(
         args.exp_dir + "/eval_result.csv",
         [val_acc, val_mAUC, eval_acc, eval_mAUC],
     )
+
+if args.use_mlflow:
+    mlflow.end_run()
