@@ -80,7 +80,7 @@ parser.add_argument(
     type=str,
     default="ft_cls",
     help="pretraining or fine-tuning task",
-    choices=["ft_avgtok", "ft_cls", "pretrain_mpc", "pretrain_mpg", "pretrain_joint"],
+    choices=["ft_avgtok", "ft_cls", "pretrain_mpc", "pretrain_mpg", "pretrain_joint"],  # ft_avgtok_1sec removed: urban8k broken (run_amba_1sec.py / run_ssast_1sec.py never existed)
 )
 parser.add_argument("--mask_patch", help="how many patches to mask (ssl pretraining only)", type=int, default=400)
 parser.add_argument("--cluster_factor", type=int, default=3, help="mask clustering factor")

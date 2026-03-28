@@ -10,9 +10,7 @@ SSAMBA (Self-Supervised Audio Mamba) is a PyTorch implementation of self-supervi
 
 ```bash
 pip install -r requirements.txt
-# Also required: clone Vision Mamba inside the repo root (ssamba/)
-# Vim is NOT currently cloned — must be done manually before running any model code
-git clone https://github.com/hustvl/Vim.git
+git submodule update --init --recursive  # pulls Vim (Vision Mamba)
 ```
 
 For VoxCeleb1/IEMOCAP tasks, also install s3prl:

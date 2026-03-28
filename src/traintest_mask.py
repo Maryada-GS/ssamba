@@ -8,6 +8,7 @@ sys.path.append(os.path.dirname(os.path.dirname(sys.path[0])))
 from utilities import *
 import time
 import torch
+from torch import nn
 import numpy as np
 import pickle
 import wandb

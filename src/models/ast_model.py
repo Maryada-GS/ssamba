@@ -404,41 +404,42 @@ class ASTModel(nn.Module):
         mask_id = random.sample(range(0, sequence_len), mask_size)
         return torch.tensor(mask_id)
 
-    def finetuningavgtok_1sec(self, x):
-        B = x.shape[0]
-        x = self.v.patch_embed(x)
-        if self.cls_token_num == 2:
-            cls_tokens = self.v.cls_token.expand(B, -1, -1)
-            dist_token = self.v.dist_token.expand(B, -1, -1)
-            x = torch.cat((cls_tokens, dist_token, x), dim=1)
-        else:
-            cls_tokens = self.v.cls_token.expand(B, -1, -1)
-            x = torch.cat((cls_tokens, x), dim=1)
-        x = x + self.v.pos_embed
-        x = self.v.pos_drop(x)
-
-        for blk in self.v.blocks:
-            x = blk(x)
-        x = self.v.norm(x)
-
-        # Average output of tokens within each 1-second segment
-        tokens_per_second = x.shape[1] // 60
-        x_averaged = torch.stack(
-            [
-                torch.mean(
-                    x[
-                        :,
-                        i * tokens_per_second : (i + 1) * tokens_per_second,
-                        :,
-                    ],
-                    dim=1,
-                )
-                for i in range(60)
-            ],
-            dim=1,
-        )
-        x_averaged = self.mlp_head(x_averaged)
-        return x_averaged
+    # BROKEN: urban8k 1-sec task — run_ssast_1sec.py never existed
+    # def finetuningavgtok_1sec(self, x):
+    #     B = x.shape[0]
+    #     x = self.v.patch_embed(x)
+    #     if self.cls_token_num == 2:
+    #         cls_tokens = self.v.cls_token.expand(B, -1, -1)
+    #         dist_token = self.v.dist_token.expand(B, -1, -1)
+    #         x = torch.cat((cls_tokens, dist_token, x), dim=1)
+    #     else:
+    #         cls_tokens = self.v.cls_token.expand(B, -1, -1)
+    #         x = torch.cat((cls_tokens, x), dim=1)
+    #     x = x + self.v.pos_embed
+    #     x = self.v.pos_drop(x)
+    #
+    #     for blk in self.v.blocks:
+    #         x = blk(x)
+    #     x = self.v.norm(x)
+    #
+    #     # Average output of tokens within each 1-second segment
+    #     tokens_per_second = x.shape[1] // 60
+    #     x_averaged = torch.stack(
+    #         [
+    #             torch.mean(
+    #                 x[
+    #                     :,
+    #                     i * tokens_per_second : (i + 1) * tokens_per_second,
+    #                     :,
+    #                 ],
+    #                 dim=1,
+    #             )
+    #             for i in range(60)
+    #         ],
+    #         dim=1,
+    #     )
+    #     x_averaged = self.mlp_head(x_averaged)
+    #     return x_averaged
 
     def finetuningavgtok(self, x):
         B = x.shape[0]
@@ -706,8 +707,8 @@ class ASTModel(nn.Module):
         # this is default for SSAST fine-tuning as during pretraining, supervision signal is given to each token, not the [cls] token
         if task == "ft_avgtok":
             return self.finetuningavgtok(x)
-        elif task == "ft_avgtok_1sec":
-            return self.finetuningavgtok_1sec(x)
+        # elif task == "ft_avgtok_1sec":  # BROKEN: urban8k
+        #     return self.finetuningavgtok_1sec(x)
         # alternatively, use the [cls] token output as clip-level representation.
         elif task == "ft_cls":
             return self.finetuningcls(x)
