@@ -14,8 +14,8 @@ mask_patch=400
 
 # audioset and librispeech
 dataset=asli
-tr_data=/engram/naplab/shared/ssamba/datafiles/audioset_librispeech.json
-te_data=/engram/naplab/shared/ssamba/datafiles/eval_data.json
+tr_data=../dataset/pretraining/audioset_librispeech.json
+te_data=../dataset/audioset/datafiles/eval_data.json
 dataset_mean=-4.2677393
 dataset_std=4.5689974
 target_length=1024
@@ -42,7 +42,7 @@ mixup=0
 
 exp_dir=./exp/ssast-${model_size}-f${fshape}-t${tshape}-b$batch_size-lr${lr}-m${mask_patch}-${task}-${dataset}
 
-CUDA_CACHE_DISABLE=1 python -W ignore ../run.py --use_wandb --dataset ${dataset} \
+CUDA_CACHE_DISABLE=1 python -W ignore ../run.py --model ssast --use_wandb --dataset ${dataset} \
 --data-train ${tr_data} --data-val ${te_data} --exp-dir $exp_dir \
 --label-csv ../finetune/audioset/data/class_labels_indices.csv \
 --lr $lr --n-epochs ${epoch} --batch-size $batch_size --save_model False \

@@ -13,8 +13,8 @@ mask_patch=300
 
 # audioset and librispeech
 dataset=asli
-tr_data=/engram/naplab/shared/ssamba/datafiles/audioset_librispeech.json
-te_data=/engram/naplab/shared/ssamba/datafiles/eval_data.json
+tr_data=../dataset/pretraining/audioset_librispeech.json
+te_data=../dataset/audioset/datafiles/eval_data.json
 dataset_mean=-4.2677393
 dataset_std=4.5689974
 target_length=1024
@@ -77,7 +77,7 @@ fi
 
 CUDA_CACHE_DISABLE=1 python -W ignore ../resume_amba.py --use_wandb $resume_args --dataset ${dataset} \
 --data-train ${tr_data} --data-val ${te_data} --exp-dir $exp_dir \
---label-csv /home/ss6928/ssamba/src/finetune/audioset/data/class_labels_indices.csv \
+--label-csv ../finetune/audioset/data/class_labels_indices.csv \
 --lr $lr --n-epochs ${epoch} --batch-size $batch_size --save_model False \
 --freqm $freqm --timem $timem --mixup ${mixup} --bal ${bal} \
 --tstride $tstride --fstride $fstride --fshape ${fshape} --tshape ${tshape} \

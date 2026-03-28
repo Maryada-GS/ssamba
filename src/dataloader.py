@@ -28,39 +28,10 @@ def make_index_dict(label_csv):
     index_lookup = {}
     with open(label_csv, "r") as f:
         csv_reader = csv.DictReader(f)
-        line_count = 0
         for row in csv_reader:
             index_lookup[row["mid"]] = row["index"]
-            line_count += 1
     return index_lookup
 
-
-def make_name_dict(label_csv):
-    name_lookup = {}
-    with open(label_csv, "r") as f:
-        csv_reader = csv.DictReader(f)
-        line_count = 0
-        for row in csv_reader:
-            name_lookup[row["index"]] = row["display_name"]
-            line_count += 1
-    return name_lookup
-
-
-def lookup_list(index_list, label_csv):
-    label_list = []
-    table = make_name_dict(label_csv)
-    for item in index_list:
-        label_list.append(table[item])
-    return label_list
-
-
-def preemphasis(signal, coeff=0.97):
-    """perform preemphasis on the input signal.
-    :param signal: The signal to filter.
-    :param coeff: The preemphasis coefficient. 0 is none, default 0.97.
-    :returns: the filtered signal.
-    """
-    return np.append(signal[0], signal[1:] - coeff * signal[:-1])
 
 
 class AudioDataset(Dataset):

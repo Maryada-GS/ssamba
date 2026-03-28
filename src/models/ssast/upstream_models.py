@@ -20,7 +20,7 @@ import sys
 from random import randrange
 import random
 
-_vim_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", "Vim")
+_vim_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "Vim")
 sys.path.append(_vim_root)
 sys.path.append(os.path.join(_vim_root, "vim"))
 sys.path.append(os.path.join(_vim_root, "vim", "mamba-1p1p1"))

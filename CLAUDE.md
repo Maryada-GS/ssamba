@@ -22,11 +22,12 @@ pip install s3prl
 
 ## Running Training / Fine-tuning
 
-All training is invoked via `src/run_amba.py`. The shell scripts under `src/pretrain/` and `src/finetune/*/` are SLURM job wrappers — they can be run directly after removing `#SBATCH` directives. Note: scripts still contain hardcoded cluster paths (`/engram/naplab/...`, `/home/ss6928/...`) that must be updated for your environment.
+All training is invoked via `src/run.py` using the `--model {amba,ssast}` flag (default: `amba`). The shell scripts under `src/pretrain/` and `src/finetune/*/` are SLURM job wrappers — they can be run directly. All hardcoded cluster paths have been replaced with paths relative to each script's location.
 
 **Pretraining:**
 ```bash
-cd src/pretrain && ./run_mask_patch_amba.sh
+cd src/pretrain && ./run_mask_patch_amba.sh      # SSAMBA
+cd src/pretrain && ./run_mask_patch.sh           # SSAST
 ```
 
 **Fine-tuning (e.g., ESC-50):**
@@ -52,29 +53,39 @@ Raw Audio → Mel-Spectrogram (128 mel bins × 1024 frames)
 ### Key files
 | File | Role |
 |------|------|
-| `src/models/both_models.py` | `AMBAModel` (Mamba-based) and `ASTModel` (ViT-based) — core model classes |
-| `src/run_amba.py` | CLI entry point; parses all hyperparameters and launches training |
+| `src/models/amba_model.py` | `AMBAModel` — Mamba-based encoder (uses Vision Mamba / Vim) |
+| `src/models/ast_model.py` | `ASTModel` — ViT-based encoder (uses timm) |
+| `src/models/ssast/` | Shared s3prl upstream expert: `expert.py`, `upstream_models.py`, `audio.py` |
+| `src/run.py` | Unified CLI entry point; `--model amba` or `--model ssast` selects model |
 | `src/traintest.py` | Supervised fine-tuning train/eval loops |
 | `src/traintest_mask.py` | Masked pre-training loop |
 | `src/dataloader.py` | `AudioDataset`: loads JSON manifests, generates log-mel spectrograms, applies SpecAugment and mix-up |
 | `src/utilities/util.py` | `AverageMeter`, normalization helpers, metric utilities |
+
+### s3prl integration (VoxCeleb1 / IEMOCAP)
+`src/finetune/{voxceleb1,iemocap}/ssast/` each contain a `hubconf.py` and a 4-line `expert.py` shim that forwards to the shared `src/models/ssast/expert.py`. The shared expert uses absolute imports with a `sys.path` insert to avoid package-relative import issues.
 
 ### Model sizes
 - **base**: embed_dim=768, depth=24
 - **small**: embed_dim=384, depth=24
 - **tiny**: embed_dim=192, depth=24
 
-Pretrained weight naming: `ssamba_{size}_{masked_patches}` (e.g., `ssamba_base_400`).
+Pretrained weight naming: `ssamba_{size}_{masked_patches}` (e.g., `ssamba_base_400`). Place `.pth` files in `src/model_weights/`.
 
-### Key CLI flags (run_amba.py)
+### Key CLI flags (run.py)
+- Model selection: `--model {amba,ssast}`
 - Audio: `--num_mel_bins`, `--target_length`, `--dataset_mean`, `--dataset_std`
 - Model: `--model_size`, `--embed_dim`, `--depth`, `--bimamba_type`, `--drop_path_rate`
 - Training: `--lr`, `--batch-size`, `--n-epochs`, `--warmup`, `--mixup`
 - Augmentation: `--freqm` (frequency mask), `--timem` (time mask)
-- Mamba-specific: `--if_rope`, `--rms_norm`, `--final_pool_type`
+- Mamba-specific: `--if_rope`, `--rms_norm`, `--final_pool_type` (ignored when `--model ssast`)
 
 ### Data format
 Datasets are referenced via JSON manifests listing audio file paths and labels. Data preparation scripts are in `src/prep_data/`.
 
 ## Downstream Tasks
-AudioSet (527-class tagging), ESC-50 (5-fold CV), Speech Commands v1/v2, Urban8k (1-min scenes), VoxCeleb1 (speaker ID, via SUPERB), IEMOCAP (emotion recognition, via SUPERB).
+AudioSet (527-class tagging), ESC-50 (5-fold CV), Speech Commands v1/v2, UrbanSound8K (1-min scenes), VoxCeleb1 (speaker ID, via SUPERB), IEMOCAP (emotion recognition, via SUPERB).
+
+## Known Pre-existing Issues
+- `src/finetune/urban8k/urban_amba.sh` and `urban_ssast.sh` reference `run_amba_1sec.py` / `run_ssast_1sec.py` which do not exist.
+- `src/pretrain/resume_mask_patch_amba.sh` references `resume_amba.py` which does not exist.

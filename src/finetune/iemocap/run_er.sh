@@ -22,5 +22,5 @@ for test_fold in fold1;
 do
   echo "running cross-validation on $test_fold"
   mkdir -p $expdir/unfreeze_cross-valid-on-${test_fold}; mkdir -p ./log/emotion/unfreeze_cross-valid-on-${test_fold}
-  python3 ~/courses/adv_dl/final/s3prl/s3prl/run_downstream.py --expdir $expdir/unfreeze_cross-valid-on-${test_fold} -m train -u $mdl -d emotion -c ~/courses/adv_dl/final/s3prl/s3prl/downstream/emotion/config.yaml -s hidden_states -o "config.downstream_expert.datarc.test_fold='$test_fold'" -f
+  python3 -m s3prl.run_downstream --expdir $expdir/unfreeze_cross-valid-on-${test_fold} -m train -u $model_function -d emotion -s hidden_states -o "config.downstream_expert.datarc.test_fold='$test_fold'" -f
 done

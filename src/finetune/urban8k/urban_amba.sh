@@ -88,14 +88,14 @@ for val_fold in {1..10}; do
   # Aggregate training data from all folds except the validation fold
   for fold in {1..10}; do
     if [ $fold -ne $val_fold ]; then
-      train_metadata_csv_paths+=("/engram/naplab/shared/UrbanSound8K/audio/concatenated_fold${fold}/concatenated_metadata.csv")
-      train_audio_base_paths+=("/engram/naplab/shared/UrbanSound8K/audio/concatenated_fold${fold}")
+      train_metadata_csv_paths+=("../../dataset/urban8k/audio/concatenated_fold${fold}/concatenated_metadata.csv")
+      train_audio_base_paths+=("../../dataset/urban8k/audio/concatenated_fold${fold}")
     fi
   done
 
   # Set validation fold paths
-  val_metadata_csv_path="/engram/naplab/shared/UrbanSound8K/audio/concatenated_fold${val_fold}/concatenated_metadata.csv"
-  val_audio_base_path="/engram/naplab/shared/UrbanSound8K/audio/concatenated_fold${val_fold}"
+  val_metadata_csv_path="../../dataset/urban8k/audio/concatenated_fold${val_fold}/concatenated_metadata.csv"
+  val_audio_base_path="../../dataset/urban8k/audio/concatenated_fold${val_fold}"
 
   # Convert arrays to colon-separated strings for passing as arguments
   train_metadata_csv_paths_str=$(IFS=:; echo "${train_metadata_csv_paths[*]}")

@@ -80,7 +80,7 @@ exp_dir=./exp/test01-${dataset}\
 # ---------------------------------------------------------------------------
 # Run fine-tuning
 # ---------------------------------------------------------------------------
-CUDA_CACHE_DISABLE=1 python -W ignore ../../run_amba.py \
+CUDA_CACHE_DISABLE=1 python -W ignore ../../run.py --model amba \
     --use_wandb \
     --dataset           ${dataset} \
     --data-train        ${tr_data} \

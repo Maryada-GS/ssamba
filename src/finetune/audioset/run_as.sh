@@ -31,13 +31,13 @@ then
   bal=none
   lr=1e-4
   epoch=50
-  tr_data=/engram/naplab/shared/ssamba/datafiles/bal_train_data.json
+  tr_data=../../dataset/audioset/datafiles/bal_train_data.json
 elif [ $set == full ]
 then
   bal=bal
   lr=1e-5
   epoch=5
-  tr_data=/engram/naplab/shared/ssamba/datafiles/bal_train_data.json
+  tr_data=../../dataset/audioset/datafiles/bal_train_data.json
 fi
 
 if [[ $pretrain_model == *"tiny"* ]]; then
@@ -49,7 +49,7 @@ else
 fi
 
 
-te_data=/engram/naplab/shared/ssamba/datafiles/eval_modified_labeled_with_data_key.json
+te_data=../../dataset/audioset/datafiles/eval_modified_labeled_with_data_key.json
 freqm=48
 timem=192
 mixup=0.5
@@ -60,7 +60,7 @@ tshape=16
 batch_size=24
 exp_dir=./exp/test01-${dataset}-f${fstride}-${fshape}-t${tstride}-${tshape}-b${batch_size}-lr${lr}-${task}-${model_size}-${pretrain_exp}-${pretrain_model}-${head_lr}x-noise${noise}-3
 
-CUDA_CACHE_DISABLE=1 python -W ignore ../../run.py --use_wandb --dataset ${dataset} \
+CUDA_CACHE_DISABLE=1 python -W ignore ../../run.py --model ssast --use_wandb --dataset ${dataset} \
 --data-train ${tr_data} --data-val ${te_data} --exp-dir $exp_dir \
 --label-csv ./data/class_labels_indices.csv --n_class 527 \
 --lr $lr --n-epochs ${epoch} --batch-size $batch_size --save_model False \

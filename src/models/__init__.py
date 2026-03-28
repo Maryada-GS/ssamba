@@ -1,1 +1,2 @@
-from .both_models import *
+from .amba_model import AMBAModel
+from .ast_model import ASTModel

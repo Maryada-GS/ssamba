@@ -12,7 +12,6 @@ import torch
 from torch import nn
 import numpy as np
 import pickle
-from torch.cuda.amp import autocast, GradScaler
 import wandb
 
 
@@ -30,8 +29,7 @@ def train(audio_model, train_loader, test_loader, args):
     per_sample_dnn_time = AverageMeter()
     progress = []
     # best_cum_mAP is checkpoint ensemble from the first epoch to the best epoch
-    best_epoch, best_cum_epoch, best_mAP, best_acc, best_cum_mAP = (
-        0,
+    best_epoch, best_mAP, best_acc, best_cum_mAP = (
         0,
         -np.inf,
         -np.inf,
@@ -383,7 +381,6 @@ def train(audio_model, train_loader, test_loader, args):
                 best_epoch = epoch
 
         if cum_mAP > best_cum_mAP:
-            best_cum_epoch = epoch
             best_cum_mAP = cum_mAP
 
         if best_epoch == epoch:

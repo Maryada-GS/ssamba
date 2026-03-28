@@ -1,5 +1,6 @@
 from models import ASTModel
 import csv
+import os
 import argparse
 import torch
 
@@ -19,7 +20,7 @@ model_size = args.model_size
 csv_file_name = f"ssast_inference_times_{model_size}_batch2.csv"
 
 # You don't need to load a pretrained model to measure inference metrics
-pretrain_path = f"/engram/naplab/shared/ssast/models/ssast_{model_size}_300.pth"
+pretrain_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "model_weights", f"ssast_{model_size}_300.pth")
 
 if model_size == "base":
     embed_dim = 768
