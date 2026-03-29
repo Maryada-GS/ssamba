@@ -3,7 +3,7 @@ name = "ssamba"
 version = "0.1.0"
 description = "Self-Supervised Audio Mamba"
 readme = "README.md"
-requires-python = ">=3.8,<3.12"
+requires-python = ">=3.10,<3.12"
 dependencies = [
     "torch==2.2.2",
     "torchaudio==2.2.2",
