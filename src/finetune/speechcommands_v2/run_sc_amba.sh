@@ -3,14 +3,15 @@
 #SBATCH --gres=gpu:1
 #SBATCH --job-name=tiny-250
 #SBATCH --time=8:00:00
-#SBATCH --mem=32G                 # Amount of memory
 #SBATCH --output=%x_%j.log
 
+source ../../.venv/bin/activate
+ echo "[$(date)] Python: $(which python)"
+ echo "[$(date)] Python version: $(python --version)"
 
 set -e
 set -x
 
-cd "$(dirname "${BASH_SOURCE[0]}")"
 
 if [ -z "$1" ]; then
     echo "Usage: $0 <pretrain_model>  (e.g. ssamba_tiny_250)"
@@ -18,7 +19,6 @@ if [ -z "$1" ]; then
 fi
 
 export TORCH_HOME=../../pretrained_models
-mkdir -p exp
 
 # Prep speechcommands dataset if not already done
 echo "[$(date)] Stage 1/3: preparing dataset..."
@@ -88,7 +88,7 @@ fi
 # ---------------------------------------------------------------------------
 # Experiment directory
 # ---------------------------------------------------------------------------
-exp_dir=./exp/test01-${dataset}\
+exp_dir=./experiments/test01-${dataset}\
 -f${fstride}-t${tstride}\
 -b${batch_size}-lr${lr}\
 -${task}-${model_size}\
