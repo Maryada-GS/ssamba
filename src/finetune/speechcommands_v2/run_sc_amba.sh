@@ -1,22 +1,32 @@
-
 #!/bin/bash
 #SBATCH --partition=l4
 #SBATCH --gres=gpu:1
 #SBATCH --job-name=tiny-250
 #SBATCH --time=8:00:00
 #SBATCH --mem=32G                 # Amount of memory
-#SBATCH --output=job_%j.log
+#SBATCH --output=%x_%j.log
 
 
+set -e
 set -x
+
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <pretrain_model>  (e.g. ssamba_tiny_250)"
+    exit 1
+fi
+
 export TORCH_HOME=../../pretrained_models
 mkdir -p exp
 
 # Prep speechcommands dataset if not already done
+echo "[$(date)] Stage 1/3: preparing dataset..."
 if [ -e data/datafiles ]; then
-    echo "speechcommands already downloaded and processed."
+    echo "[$(date)] Stage 1/3: dataset already prepared, skipping."
 else
     python prep_sc.py
+    echo "[$(date)] Stage 1/3: dataset preparation done."
 fi
 
 # ---------------------------------------------------------------------------
@@ -24,6 +34,11 @@ fi
 # ---------------------------------------------------------------------------
 pretrain_exp="amba"
 pretrain_model=$1
+
+# Download pretrained weights if not already present (skips if .pth exists)
+echo "[$(date)] Stage 2/3: downloading weights for ${pretrain_model}..."
+python download_weights.py "${pretrain_model}"
+echo "[$(date)] Stage 2/3: weights ready."
 pretrain_path="../../model_weights/${pretrain_model}.pth"
 
 # ---------------------------------------------------------------------------
@@ -83,6 +98,7 @@ exp_dir=./exp/test01-${dataset}\
 # ---------------------------------------------------------------------------
 # Run fine-tuning
 # ---------------------------------------------------------------------------
+echo "[$(date)] Stage 3/3: starting fine-tuning (model=${pretrain_model}, size=${model_size})..."
 # Original command commented out — Mamba config vars were undefined in this script;
 # removed them below to let run.py argparse defaults apply.
 # CUDA_CACHE_DISABLE=1 python -W ignore ../../run.py --model amba \
@@ -185,3 +201,4 @@ CUDA_CACHE_DISABLE=1 python -W ignore ../../run.py --model amba \
     --metrics           acc \
     --wa                False \
     --output        ~/runs/amba
+echo "[$(date)] Stage 3/3: fine-tuning finished."
