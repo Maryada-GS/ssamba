@@ -5,8 +5,8 @@ description = "Self-Supervised Audio Mamba"
 readme = "README.md"
 requires-python = ">=3.10,<3.12"
 dependencies = [
-    "torch==2.2.2",
-    "torchaudio==2.2.2",
+    "torch==2.11.0",
+    "torchaudio==2.11.0",
     "mamba-ssm==2.3.1",  # was 1.2.0.post1
     "causal-conv1d==1.6.1",  # was 1.2.0.post2
     "einops==0.8.0",
