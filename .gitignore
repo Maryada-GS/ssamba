@@ -4,3 +4,5 @@
 *.wav
 *.json
 *.tar.gz
+*.log
+**/speech_commands_v0.02/

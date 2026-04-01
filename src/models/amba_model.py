@@ -19,9 +19,10 @@ from random import randrange
 import random
 
 _vim_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "Vim")
+print(_vim_root)
 sys.path.append(_vim_root)
 sys.path.append(os.path.join(_vim_root, "vim"))
-sys.path.append(os.path.join(_vim_root, "vim", "mamba-1p1p1"))
+sys.path.append(os.path.join(_vim_root, "mamba-1p1p1"))
 
 
 try:
@@ -33,7 +34,7 @@ try:
     )
 
 except ImportError:
-    RMSNorm, layer_norm_fn, rms_norm_fn = None, None, None
+    RMSNorm, layer_norm_fn, rms_norm_fn,VisionMamba = None, None, None, None
 
 
 class PatchEmbed(nn.Module):

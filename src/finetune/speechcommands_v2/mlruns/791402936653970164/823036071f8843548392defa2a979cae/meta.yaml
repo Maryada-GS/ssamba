@@ -1,0 +1,15 @@
+artifact_uri: file:///home/Maryada-GS/dev/ssamba/src/finetune/speechcommands_v2/mlruns/791402936653970164/823036071f8843548392defa2a979cae/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '791402936653970164'
+lifecycle_stage: active
+run_id: 823036071f8843548392defa2a979cae
+run_name: trusting-elk-63
+run_uuid: 823036071f8843548392defa2a979cae
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1775046217873
+status: 1
+tags: []
+user_id: Maryada-GS

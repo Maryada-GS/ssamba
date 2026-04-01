@@ -24,7 +24,9 @@ def download_dataset():
     tarball = f"{DATA_DIR}/speech_commands_v0.02.tar.gz"
     wget.download(SC_URL, out=DATA_DIR)
     os.makedirs(SC_DIR, exist_ok=True)
-    os.system(f"tar -xzvf {tarball} -C {SC_DIR}")
+    os.system(f"tar -xzf {tarball} -C {SC_DIR}")
+    n_files = sum(len(files) for _, _, files in os.walk(SC_DIR))
+    print(f"\n{n_files} files extracted.")
 
 
 def build_train_list():

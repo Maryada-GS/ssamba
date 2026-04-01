@@ -5,9 +5,9 @@
 #SBATCH --time=8:00:00
 #SBATCH --output=%x_%j.log
 
-source ../../.venv/bin/activate
- echo "[$(date)] Python: $(which python)"
- echo "[$(date)] Python version: $(python --version)"
+source ../../../.venv/bin/activate
+echo "[$(date)] Python: $(which python)"
+echo "[$(date)] Python version: $(python --version)"
 
 set -e
 set -x
@@ -200,5 +200,11 @@ CUDA_CACHE_DISABLE=1 python -W ignore ../../run.py --model amba \
     --loss              BCE \
     --metrics           acc \
     --wa                False \
-    --output        ~/runs/amba
+    --if_abs_pos_embed  'true' \
+    --if_cls_token      'true' \
+    --if_devide_out     'true' \
+    --use_middle_cls_token 'true' \
+    --final_pool_type   'mean' \
+    --num-workers       2 \
+    --use_mlflow
 echo "[$(date)] Stage 3/3: fine-tuning finished."
